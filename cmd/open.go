@@ -33,6 +33,6 @@ var openCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(openCmd)
-	openCmd.Flags().String("dir", "", "Change into directory on created")
-	openCmd.Flags().Bool("force", false, "Kill existing session")
+	openCmd.Flags().StringP("dir", "d", "", "Change into directory on created")
+	openCmd.Flags().BoolP("force", "f", false, "Kill existing session")
 }
