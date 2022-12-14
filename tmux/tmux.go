@@ -32,14 +32,14 @@ func KillSession(name string) {
 }
 
 func ChangeDirectory(name string, directory string) {
-	sendKeys(name, fmt.Sprintf("cd '%s'", directory))
+	SendKeys(name, fmt.Sprintf("cd '%s'", directory))
 }
 
 func Clear(name string) {
-	sendKeys(name, "clear; tmux clear-history; clear")
+	SendKeys(name, "clear; tmux clear-history; clear")
 }
 
-func sendKeys(name string, command string) {
+func SendKeys(name string, command string) {
 	execTmux("send-keys", "-t", name, command, "C-m")
 }
 

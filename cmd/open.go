@@ -12,6 +12,7 @@ var openCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		force, _ := cmd.Flags().GetBool("force")
 		dir, _ := cmd.Flags().GetString("dir")
+		run, _ := cmd.Flags().GetString("run")
 
 		name := args[0]
 		exists := tmux.SessionExists(name)
@@ -27,12 +28,18 @@ var openCmd = &cobra.Command{
 				tmux.Clear(name)
 			}
 		}
+
+		if run != "" {
+			tmux.SendKeys(name, run)
+		}
+
 		tmux.FocusSession(name)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(openCmd)
-	openCmd.Flags().StringP("dir", "d", "", "Change into directory on created")
+	openCmd.Flags().StringP("run", "r", "", "Run command on creating")
+	openCmd.Flags().StringP("dir", "d", "", "Change into directory on creating")
 	openCmd.Flags().BoolP("force", "f", false, "Kill existing session")
 }
