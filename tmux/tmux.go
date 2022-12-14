@@ -72,16 +72,19 @@ func SessionIsEmpty(name string) bool {
 	return len(windows) == 1 && len(panes) == 1
 }
 
-func FocusSession(name string) {
-	execTmux("switch-client", "-t", name)
+// switch-client [-ElnprZ] [-c target-client] [-t target-session] [-T key-table]
+func FocusSession(targetSession string) {
+	execTmux("switch-client", "-t", targetSession)
 }
 
+// new-session [-AdDEPX] [-c start-directory] [-e environment] [-f flags] [-F format] [-n window-name] [-s session-name] [-t group-name] [-x width] [-y height] [shell-command]
 func NewSession(name string) {
 	execTmux("new-session", "-s", name, "-d")
 }
 
-func KillSession(name string) {
-	execTmux("kill-session", "-t", name)
+// kill-session [-aC] [-t target-session]
+func KillSession(targetSession string) {
+	execTmux("kill-session", "-t", targetSession)
 }
 
 func ChangeDirectory(name string, directory string) {
@@ -92,16 +95,25 @@ func Clear(name string) {
 	SendKeys(name, "clear; tmux clear-history; clear")
 }
 
-func SendKeys(name string, command string) {
-	execTmux("send-keys", "-t", name, command, "C-m")
+// send-keys [-FHlMRX] [-N repeat-count] [-t target-pane] key ...
+//
+// Note:
+// - seems like target can also be a session name
+func SendKeys(target string, command string) {
+	execTmux("send-keys", "-t", target, command, "C-m")
 }
 
-func NewWindow(sessionName string, name string) {
-	execTmux("new-window", "-t", sessionName, "-n", name, "-d")
+// new-window [-abdkPS] [-c start-directory] [-e environment] [-F format] [-n window-name] [-t target-window] [shell-command]
+//
+// Note:
+// - seems like target can also be a session name
+func NewWindow(target string, name string) {
+	execTmux("new-window", "-t", target, "-n", name, "-d")
 }
 
-func RenameWindow(window, name string) {
-	execTmux("rename-window", "-t", window, name)
+// rename-window [-t target-window] new-name
+func RenameWindow(targetWindow string, name string) {
+	execTmux("rename-window", "-t", targetWindow, name)
 }
 
 func execTmux(args ...string) string {
@@ -110,6 +122,7 @@ func execTmux(args ...string) string {
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
+
 	err := cmd.Run()
 
 	if err != nil {
@@ -124,13 +137,4 @@ func execTmuxList(args ...string) []string {
 	out := execTmux(args...)
 
 	return strings.Split(strings.Trim(out, "\n"), "\n")
-}
-
-type ExecError struct {
-	err error
-	Out string
-}
-
-func (e *ExecError) Error() string {
-	return e.err.Error()
 }
