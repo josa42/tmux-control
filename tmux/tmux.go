@@ -31,6 +31,18 @@ func KillSession(name string) {
 	execTmux("kill-session", "-t", name)
 }
 
+func ChangeDirectory(name string, directory string) {
+	sendKeys(name, fmt.Sprintf("cd '%s'", directory))
+}
+
+func Clear(name string) {
+	sendKeys(name, "clear; tmux clear-history; clear")
+}
+
+func sendKeys(name string, command string) {
+	execTmux("send-keys", "-t", name, command, "C-m")
+}
+
 func execTmux(arg ...string) string {
 	cmd := exec.Command("tmux", arg...)
 
